@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PageDropdownMenu()
+                    PageDynamicDropdownMenu()
                 }
             }
         }
@@ -89,7 +89,51 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     JcWidgetsTheme {
-        PageDropdownMenu()
+        PageDynamicDropdownMenu()
+    }
+}
+
+@Composable
+fun PageDynamicDropdownMenu() {
+    val countryList = listOf("Turkey","Italy","Japan","Russia","China")
+    val menuStartingControl = remember { mutableStateOf(false) }
+    val selectedIndex = remember { mutableStateOf(0) }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Box{
+            Row (
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .size(100.dp, 50.dp)
+                    .clickable {
+                        menuStartingControl.value = true
+                    }
+            ){
+                Text(text = countryList[selectedIndex.value])
+                Image(painter = painterResource(id = R.drawable.dropdownimage),
+                    contentDescription = "")
+            }
+
+            DropdownMenu(
+                expanded = menuStartingControl.value,
+                onDismissRequest = { menuStartingControl.value = false }) {
+
+                countryList.forEachIndexed { index, country ->
+                    DropdownMenuItem(
+                        text = { Text(text = country) },
+                        onClick = {
+                            Log.e("Menu","Country is selected : ${country}")
+                            menuStartingControl.value = false
+                            selectedIndex.value = index
+                        })
+                }
+            }
+        }
     }
 }
 
